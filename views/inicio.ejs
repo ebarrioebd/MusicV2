@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mi Música | Reproductor</title>
+  <link rel="stylesheet" href="stylesheets/style.css">
+  </style>
+</head>
+
+<body>
+  <div class="bg-decor"></div>
+  <%- include('partials/nav'); %>
+    <header>Mi Música</header>
+    <div class="container">
+      <div class="player">
+        <div class="player-card">
+          <h3 id="titulo-track">Selecciona una canción</h3>
+          <audio id="audio" controls></audio>
+          <div>
+
+          </div>
+          <div class="controls">
+            <div class="nav-div" onclick="mostrarLista()"><img src="/images/album.png" height="30" width="30"></div>
+            <button class="btn" id="prev">⏮️</button>
+            <button class="btn" id="play">▶️</button>
+            <button class="btn" id="next">⏭️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="lista-musica" class="ocultarIni lista-inicio">
+      <div style="height: min-content;display: grid;align-items: center;justify-items: end;margin: 7px;">
+        <img onclick="mostrarLista()" src="/images/cancelar.png" height="30" width="30">
+      </div>
+      <div style="display: flex; align-items: center; margin-left:5px ;justify-content: center;"
+        onclick="mostrarLista()">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="8" width="3" height="12" rx="1.5" fill="currentColor" />
+            <rect x="9.5" y="4" width="3" height="16" rx="1.5" fill="currentColor" />
+            <rect x="16" y="10" width="3" height="10" rx="1.5" fill="currentColor" />
+          </svg>
+        </div>
+        <h2>Lista de reproducción</h2>
+      </div>
+      <div id="listMusic" class="">
+        <% data.musics.forEach(function(item) { let musica=JSON.parse(JSON.stringify(item)); %>
+          <div style="display: flex; align-items: center;margin: 10px;">
+            <img src="/images/icon-music.png" height="30" width="30">
+            <div class="track" data-src="<%= musica.url %>">
+              <%= musica.nombre %>
+            </div>
+          </div>
+          <% }); %>
+      </div>
+    </div>
+    <div id="config-inicio" class="ocultarIni config-inicio">
+      <div style="height: min-content;display: grid;align-items: center;justify-items: end;margin: 7px;">
+        <img onclick="mostrarConfig()" src="/images/cancelar.png" height="30" width="30">
+      </div>
+ 
+    </div>
+    <script>
+      let isShowListMusic = false;
+      const listaInicio = document.getElementById("lista-musica");
+      function mostrarLista() {
+
+        listaInicio.classList.remove("ocultarIni");
+        if (isShowListMusic) {
+          console.log(isShowListMusic)
+          listaInicio.classList.remove("mostrarList");
+          listaInicio.classList.add("ocultarConfig");
+        } else {
+          console.log(isShowListMusic)
+          listaInicio.classList.add("mostrarList");
+          listaInicio.classList.remove("ocultarConfig");
+        }
+        isShowListMusic = !isShowListMusic;
+      }
+      let isShowConfig = false;
+      function mostrarConfig() {
+        document.getElementById("config-inicio").classList.remove("ocultarIni");
+        if (isShowConfig) {
+          document.getElementById("config-inicio").classList.remove("mostrarConfig");
+          document.getElementById("config-inicio").classList.add("ocultarConfig");
+        } else {
+          document.getElementById("config-inicio").classList.add("mostrarConfig");
+          document.getElementById("config-inicio").classList.remove("ocultarConfig");
+        }
+        isShowConfig = !isShowConfig;
+      }
+      function mostrarLista0() {
+        document.getElementById("listMusic").classList.toggle("ocultarList");
+      }
+      const tracks = document.querySelectorAll('.track');
+      const audio = document.getElementById('audio');
+      const title = document.getElementById('titulo-track');
+      let current = 0;
+      function loadTrack(i) {
+        const t = tracks[i]; tracks.forEach(el => el.classList.remove('active'));
+        t.classList.add('active');
+        audio.src = t.dataset.src;
+        title.textContent = t.textContent;
+      }
+      tracks.forEach((t, i) => t.addEventListener('click', () => { current = i; loadTrack(i); audio.play(); }));
+      document.getElementById('play').onclick = () => audio.paused ? audio.play() : audio.pause();
+      document.getElementById('prev').onclick = () => { current = (current - 1 + tracks.length) % tracks.length; loadTrack(current); audio.play(); };
+      document.getElementById('next').onclick = () => { current = (current + 1) % tracks.length; loadTrack(current); audio.play(); };
+    </script>
+</body>
+
+</html>

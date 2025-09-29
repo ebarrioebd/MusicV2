@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Iniciar sesión | MiMúsica</title>
+    <link rel="stylesheet" href="stylesheets/login.css">
+</head>
+
+<body>
+
+    <%- include('partials/nav'); %>
+        <div class="bg-decor" aria-hidden="true"></div>
+        <div class="content">
+            <main class="wrap">
+                <section class="card" aria-labelledby="titulo">
+                    <header>
+                        <div class="logo" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <rect x="3" y="8" width="3" height="12" rx="1.5" fill="currentColor" />
+                                <rect x="9.5" y="4" width="3" height="16" rx="1.5" fill="currentColor" />
+                                <rect x="16" y="10" width="3" height="10" rx="1.5" fill="currentColor" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 id="titulo">Agrega tu Musica</h1>
+                        </div>
+                    </header>
+
+                    <div id="form-login">
+                        <div class="field">
+                            <label for="nombre">Nombre y Autor</label>
+                            <input id="nombre" name="nombre" type="text" autocomplete="disabled"
+                                placeholder="Nombre y Autor de la musica" autocomplete="nombre" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="url">Url de Dropbox</label>
+                            <input id="url" name="url" type="text" placeholder="url" autocomplete="current-password"
+                                required>
+                        </div>
+
+                        <div class="actions">
+                            <button class="btn" onclick="addMusic()">Agregar</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+
+            <main class="wrap">
+                <section class="card" aria-labelledby="titulo">
+                    <header>
+                        <div class="" aria-hidden="true">
+                            <img src="/images/icon_img.png" width="38">
+                        </div>
+                        <div>
+                            <h1 id="titulo">Agrega tu Imagen</h1>
+                        </div>
+                    </header>
+
+                    <div id="form-login">
+                        <div class="field">
+                            <label for="nombre">Nombre(opcional)</label>
+                            <input id="nombreImg" type="text" autocomplete="disabled"
+                                placeholder="Nombre y Autor de la musica" autocomplete="nombre" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="url">Url de Dropbox</label>
+                            <input id="urlImg" type="text" placeholder="url" autocomplete="current-password" required>
+                        </div>
+
+                        <div class="actions">
+                            <button class="btn" onclick="addImg()">Agregar</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+        <script>
+            function listoMusic(datos) {
+                document.getElementById("nombre").value = "";
+                document.getElementById("url").value = "";
+            }
+            function listoImg(datos) {
+                document.getElementById("nombreImg").value = "";
+                document.getElementById("urlImg").value = "";
+            }
+            function fetchPost(url, dataJson, callback) {
+                fetch(url, {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dataJson),
+                }).then(respuesta => respuesta.json())
+                    .then(datos => {
+                        callback(datos);
+                    });
+            }
+            function addMusic() {
+                const nombre = document.getElementById("nombre").value;
+                const urlDrodpox = document.getElementById("url").value;
+                console.log(nombre, urlDrodpox)
+                if (urlDrodpox.slice(0, 24) == "https://www.dropbox.com/" && nombre.length > 5) {
+                    let url_direct = "https://dl.dropboxusercontent.com" + urlDrodpox.slice(23, urlDrodpox.length - 5);
+                    const dataJson = {
+                        nombre: nombre,
+                        url: url_direct
+                    };
+                    fetchPost("/usuarios/addMusic", dataJson, listoMusic);
+                    /*fetch('/usuarios/addMusic', {
+                        method: 'post',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            nombre: nombre,
+                            url: url_direct
+                        }),
+                    }).then(respuesta => respuesta.json())
+                        .then(datos => {
+                            document.getElementById("nombre").value="";
+                            document.getElementById("url").value ="";
+                            listo(datos)
+                        })*/
+                }
+                else {
+                    alert("No ur DrobPox");
+                }
+            }
+            function addImg() {
+                const nombre = document.getElementById("nombreImg").value;
+                const urlDrodpox = document.getElementById("urlImg").value;
+                console.log(nombre, urlDrodpox)
+                if (urlDrodpox.slice(0, 24) == "https://www.dropbox.com/" && nombre.length > 5) {
+                    let url_direct = "https://dl.dropboxusercontent.com" + urlDrodpox.slice(23, urlDrodpox.length - 5);
+                    const dataJson = {
+                        nombre: nombre,
+                        url: url_direct
+                    };
+                    fetchPost("/usuarios/addImg", dataJson, listoImg);
+                }
+                else {
+                    alert("No ur DrobPox");
+                }
+            }
+        </script>
+</body>
+
+</html>

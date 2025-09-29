@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root {
+            --bg-1: #0f172a;
+            --bg-2: #111827;
+            --accent: #8b5cf6;
+            --accent-2: #22d3ee;
+            --text: #e5e7eb;
+            --muted: #94a3b8;
+            --card-bg: rgba(255, 255, 255, .08);
+            --card-border: rgba(255, 255, 255, .15);
+            --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-1: #e2e8f0;
+                --bg-2: #f1f5f9;
+                --text: #0f172a;
+                --muted: #475569;
+                --card-bg: rgba(255, 255, 255, .6);
+                --card-border: rgba(0, 0, 0, .08);
+                --shadow: 0 10px 30px rgba(0, 0, 0, .15);
+            }
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui;
+            color: var(--text);
+            background: radial-gradient(1200px 800px at 10% 10%, var(--bg-2), var(--bg-1)) fixed;
+            display: grid; 
+            overflow-x: hidden;
+        }
+
+        .bg-decor {
+            position: fixed;
+            inset: -20vmax;
+            pointer-events: none;
+            filter: blur(60px);
+            opacity: .4;
+            background: radial-gradient(40vmax 40vmax at 15% 20%, var(--accent), transparent 60%),
+                radial-gradient(35vmax 35vmax at 85% 30%, var(--accent-2), transparent 55%),
+                radial-gradient(45vmax 45vmax at 60% 85%, #f59e0b, transparent 60%);
+            z-index: -1;
+        }
+
+        .wrap {
+            width: min(92vw, 440px);
+            padding: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px) saturate(120%);
+            -webkit-backdrop-filter: blur(16px) saturate(120%);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 28px;
+        } 
+    </style>
+</head>
+
+<body>
+    <%- include('partials/nav'); %>
+        <div class="bg-decor" aria-hidden="true"></div>
+        <main class="wrap">
+            <section class="card" aria-labelledby="titulo"></section>
+        </main>
+</body>
+
+</html>
