@@ -172,7 +172,7 @@ class AudioPlayer {
     // Events from <audio>
     _onPlay() {
         this.isPlaying = true;
-        this.playBtn.textContent = '⏸';
+        this.playBtn.textContent = '||';
         // init audio context if not yet (user gesture)
         if (!this.audioContext) this.initAudioContextOnce();
         if (this.audioContext && this.audioContext.state === 'suspended') this.audioContext.resume();

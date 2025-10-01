@@ -21,7 +21,7 @@
             <h3 style="text-align: center;">Elimina y Edita tu Musica</h3>
             <% imagenes.forEach(function(item) { %>
                 <div class="track-list" id="<%= item.id %>" style="display: flex; align-items: center;margin: 10px; justify-content:space-between;">
-                    <img src="<%= item.nombre %>" height="150" > 
+                    <img src="<%= item.url %>" height="150" > 
                     <button onclick="eliminarImg('<%= item.id %>')">
                         <img src="/images/borrar.png" height="40" width="40">
                     </button>
