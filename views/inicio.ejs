@@ -5,43 +5,70 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mi Música | Reproductor</title>
-  <link rel="stylesheet" href="stylesheets/style.css">
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="/stylesheets/w_config.css">
+  <link rel="stylesheet" href="/stylesheets/css_reproductor.css">
+  <style>
+    #canvas {
+      width: 80%;
+      height: 10vh;
+    }
   </style>
 </head>
 
 <body>
-  <div id="bg-decor" class="bg-decor"></div>
   <%- include('partials/nav'); %>
     <header>Mi Música</header>
     <div class="container">
       <div class="player">
-        <div class="player-card">
-          <h3 id="titulo-track">Selecciona una canción</h3>
-          <audio id="audio" controls></audio>
-          <div>
+        <div class="audio-player">
+          <audio id="audio"
+            src="https://dl.dropboxusercontent.com/scl/fi/78xrq0kiwxqa8ditjovqw/I-DON-T-WANT-TO-SET-THE-WORLD-ON-FIRE-THE-INK-SPOTS-SUBTITULADA.mp3?rlkey=dx2mueyy3ek6mhgkvtaz1j6a9&st=v8zckuf1"
+            crossorigin="anonymous">
 
-          </div>
-          <div class="controls">
-            <div class="nav-div" onclick="mostrarLista()"><img src="/images/album.png" height="30" width="30"></div>
-            <button class="btn-icon" id="prev">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M18 6l-8.5 6L18 18V6zm-9.5 12V6H6v12h2.5z" />
-              </svg>
-            </button>
-            <button class="btn-icon" id="play">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </button>
-            <button class="btn-icon" id="next">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M6 18l8.5-6L6 6v12zm9.5-12v12H18V6h-2.5z" />
-              </svg>
-            </button>
+          </audio>
+          <div class="player-controls">
+            
+            <div style="display: flex;justify-content: center ;">
+            <canvas style="width: 90%;" id="canvas"></canvas>
+            </div>
+            <marquee class="titulo-track" id="titulo-track">Selecciona una canción</marquee>
+            <div class="progress-container">
+              <span class="time" id="currentTime">0:00</span>
+              <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
+              </div>
+              <span class="time" id="duration">0:00</span>
+            </div>
+
+            <div class="controls-audio">
+              <button class="btn-icon" id="prev">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M18 6l-8.5 6L18 18V6zm-9.5 12V6H6v12h2.5z" />
+                </svg>
+              </button>
+              <button class="play-btn" id="playPause">▶</button>
+              <button class="btn-icon" id="next">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M6 18l8.5-6L6 6v12zm9.5-12v12H18V6h-2.5z" />
+                </svg>
+              </button>
+            </div> 
+            <div class="volume-control">
+              <button class="volume-btn" id="volumeBtn">🔊</button>
+              <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+            </div>
+            <div>
+              <div class="nav-div" onclick="mostrarLista()"><img src="/images/album.png" height="30" width="30"></div>
+            </div>
           </div>
         </div>
+         
       </div>
     </div>
+
+    
+
     <div id="lista-musica" class="ocultarIni lista-inicio">
       <div style="height: min-content;display: grid;align-items: center;justify-items: end;margin: 7px;">
         <img onclick="mostrarLista()" src="/images/cancelar.png" height="30" width="30">
@@ -58,121 +85,48 @@
         <h2>Lista de reproducción</h2>
       </div>
       <div id="listMusic" style="height: inherit; overflow-y: scroll;" class="">
-        <% data.musics.forEach(function(item) { let musica=JSON.parse(JSON.stringify(item)); %>
-          <div style="display: flex; align-items: center;margin: 10px;">
+        <% musics.forEach(function(item) { %>
+          <div class="track-list" id="tracks" style="display: flex; align-items: center;margin: 10px;">
             <img src="/images/icon-music.png" height="30" width="30">
-            <div class="track" data-src="<%= musica.url %>">
-              <%= musica.nombre %>
+            <div class="track" data-src="<%= item.url %>">
+              <%= item.nombre %>
             </div>
           </div>
           <% }); %>
       </div>
     </div>
-    <div id="config-inicio" class="ocultarIni config-inicio">
-      <div style="height: min-content;display: grid;align-items: center;justify-items: end;margin: 7px;">
-        <img onclick="mostrarConfig()" src="/images/cancelar.png" height="30" width="30">
-      </div>
-      <div style="display: grid;">
-        <h2 style="text-align: center;">Configuracion</h2>
-        <fieldset>
-          <legend>Seleccionar fondo</legend>
-          <select style="width: 100%;" id="selectImg" onchange="setFondo()">
-            <option selected>Seleccionar Img</option>
-            <% data.imagenes.forEach(function(item) { let imgs=JSON.parse(JSON.stringify(item)); %>
-              <option  value="<%= imgs.url %>">
-                <%= imgs.nombre %>
-              </option>
-              <% }); %>
-          </select>
-        </fieldset>
-        <br>
-        <fieldset>
-          <legend>Seleccionar blur</legend>
-          <input style="width: 100%;" id="rangeBlur" value="10" step="0.1" type="range" min="0" max="30">
-        </fieldset>
-      </div>
+
+    <div class="divCanvasFrecuency">
     </div>
-    <script>
-      const config_inicio = {
-        blur: "10",
-        imgFondo: `radial-gradient(40vmax 40vmax at 15% 20%, var(--accent), transparent 60%),
-    radial-gradient(35vmax 35vmax at 85% 30%, var(--accent-2), transparent 55%),
-    radial-gradient(45vmax 45vmax at 60% 85%, #f59e0b, transparent 60%);`
-      }
-      const bg_decor = document.getElementById('bg-decor');
-      const urlImg = document.getElementById("selectImg");
-      const rangeBlur = document.getElementById('rangeBlur');
 
-      function actualizarConfig() {
-        bg_decor.style = `
-          filter:blur(${config_inicio.blur}px);
-          background-image:url('${config_inicio.imgFondo}');
-          inset:0px;
-        `;
-      }
-      function setFondo() {
-        config_inicio.imgFondo = urlImg.value;
-        actualizarConfig();
-      }
+    <%- include('partials/config.ejs'); -%>
+      <script>
+        localStorage.setItem("imagen_fondo", "<%= imagen_fondo %>");
+        localStorage.setItem("blur", "<%= blur %>");
 
-      rangeBlur.addEventListener('input', (event) => {
-        console.log("Blur:", event.target.value);
-        config_inicio.blur = event.target.value;
-        actualizarConfig();
-      })
+        let isShowListMusic = false;
+        const listaInicio = document.getElementById("lista-musica");
+        function mostrarLista() {
 
-      function setColor() {
-
-      }
-      actualizarConfig();
-
-      //Funciones para mostrar ventanas flotantes
-      let isShowListMusic = false;
-      const listaInicio = document.getElementById("lista-musica");
-      function mostrarLista() {
-
-        listaInicio.classList.remove("ocultarIni");
-        if (isShowListMusic) {
-          console.log(isShowListMusic)
-          listaInicio.classList.remove("mostrarList");
-          listaInicio.classList.add("ocultarConfig");
-        } else {
-          console.log(isShowListMusic)
-          listaInicio.classList.add("mostrarList");
-          listaInicio.classList.remove("ocultarConfig");
+          listaInicio.classList.remove("ocultarIni");
+          if (isShowListMusic) {
+            console.log(isShowListMusic)
+            listaInicio.classList.remove("mostrarList");
+            listaInicio.classList.add("ocultarConfig");
+          } else {
+            console.log(isShowListMusic)
+            listaInicio.classList.add("mostrarList");
+            listaInicio.classList.remove("ocultarConfig");
+          }
+          isShowListMusic = !isShowListMusic;
         }
-        isShowListMusic = !isShowListMusic;
-      }
-      let isShowConfig = false;
-      function mostrarConfig() {
-        document.getElementById("config-inicio").classList.remove("ocultarIni");
-        if (isShowConfig) {
-          document.getElementById("config-inicio").classList.remove("mostrarConfig");
-          document.getElementById("config-inicio").classList.add("ocultarConfig");
-        } else {
-          document.getElementById("config-inicio").classList.add("mostrarConfig");
-          document.getElementById("config-inicio").classList.remove("ocultarConfig");
+        function mostrarLista0() {
+          document.getElementById("listMusic").classList.toggle("ocultarList");
         }
-        isShowConfig = !isShowConfig;
-      }
-      function mostrarLista0() {
-        document.getElementById("listMusic").classList.toggle("ocultarList");
-      }
-      const tracks = document.querySelectorAll('.track');
-      const audio = document.getElementById('audio');
-      const title = document.getElementById('titulo-track');
-      let current = 0;
-      function loadTrack(i) {
-        const t = tracks[i]; tracks.forEach(el => el.classList.remove('active'));
-        t.classList.add('active');
-        audio.src = t.dataset.src;
-        title.textContent = t.textContent;
-      }
-      tracks.forEach((t, i) => t.addEventListener('click', () => { current = i; loadTrack(i); audio.play(); }));
-      document.getElementById('play').onclick = () => audio.paused ? audio.play() : audio.pause();
-      document.getElementById('prev').onclick = () => { current = (current - 1 + tracks.length) % tracks.length; loadTrack(current); audio.play(); };
-      document.getElementById('next').onclick = () => { current = (current + 1) % tracks.length; loadTrack(current); audio.play(); };
-    </script>
+      </script>
+      <script src="/javascripts/js_windows_float.js"></script>
+      <script src="/javascripts/class_js_repr.js"></script>
+
 </body>
 
 </html>

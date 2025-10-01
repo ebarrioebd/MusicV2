@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 12;
 
 exports.crearUsuario = async (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
     try {
         const { nombre, email, password, edad, alias } = req.body;
 
@@ -42,7 +42,7 @@ exports.obtenerUsuarioPorEmail = async (req, res) => {
         const sql = `SELECT id, nombre, email,password_hash, edad, alias, blur, color_fondo, imagen_fondo FROM usuarios WHERE email = ?`;
         const row = await db.get(sql, [email]);
         const usuario = row;
-        console.log("LOGIN:", usuario);
+        //console.log("LOGIN:", usuario);
         if (!row) {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
@@ -53,23 +53,23 @@ exports.obtenerUsuarioPorEmail = async (req, res) => {
 
         if (esCorrecto) {
             const sqlMusic = `SELECT id,nombre,url FROM musicas WHERE email_user = ?`
-            const rowMusic = await db.all(sqlMusic, [email]); 
+            const rowMusic = await db.all(sqlMusic, [email]);
             let arrMusics = [];
             Object.keys(rowMusic).forEach(key => {
                 arrMusics.push({
-                    id:rowMusic[key].id,
-                    nombre:rowMusic[key].nombre,
-                    url:rowMusic[key].url
+                    id: rowMusic[key].id,
+                    nombre: rowMusic[key].nombre,
+                    url: rowMusic[key].url
                 })
             });
             const sqlImg = `SELECT id,nombre,url FROM imagenes WHERE email_user = ?`;
-            const rowImg = await db.all(sqlImg,[email]);
+            const rowImg = await db.all(sqlImg, [email]);
             let arrImgs = [];
-            Object.keys(rowImg).forEach(key=>{
+            Object.keys(rowImg).forEach(key => {
                 arrImgs.push({
-                    id:rowImg[key].id,
-                    nombre:rowImg[key].nombre,
-                    url:rowImg[key].url
+                    id: rowImg[key].id,
+                    nombre: rowImg[key].nombre,
+                    url: rowImg[key].url
                 })
             })
             // ✅ Guardar datos en sesión
@@ -82,17 +82,36 @@ exports.obtenerUsuarioPorEmail = async (req, res) => {
                 color_fondo: usuario.color_fondo,
                 imagen_fondo: usuario.imagen_fondo,
                 musics: arrMusics,
-                imagenes:arrImgs
+                imagenes: arrImgs
             };
             res.redirect("/inicio");
         } else {
-            return res.status(401).json({ error: 'Contraseña incorrecta', data: (usuario) });
+            return res.status(401).json({ error: 'Contraseña incorrecta' });
         }
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+exports.actualizarConfig = async (req, res, next) => {
+    try {
+        const { blur, imgFondo } = req.body;
+        const sql = `
+            UPDATE usuarios
+            SET blur = ?, imagen_fondo = ?, fecha_actualizacion = CURRENT_TIMESTAMP
+            WHERE email = ?
+        `;
+        const result = await db.run(sql, [blur, imgFondo, req.session.usuario.email]);
+        if (result.changes === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        //Actualizamos datos de la session.suario
+        req.session.usuario.blur = blur;
+        req.session.usuario.imagen_fondo = imgFondo;
+        res.status(200).json({ msg: "Configuracion guradada..." });
+    } catch (err) {
 
+    }
+}
 exports.actualizarUsuario = async (req, res) => {
     try {
         const { id } = req.params;
@@ -130,7 +149,7 @@ exports.eliminarUsuario = async (req, res) => {
 };
 
 ///Musica
-exports.addMusic = async (req, res) => { 
+exports.addMusic = async (req, res) => {
     try {
         const { nombre, url } = req.body;
 
@@ -146,8 +165,29 @@ exports.addMusic = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-///Musica
-exports.addImg = async (req, res) => { 
+
+exports.removeMusic = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const sql = `DELETE FROM musicas WHERE id = ?`;
+        const result = await db.run(sql, [id]);
+
+        if (result.changes === 0) {
+            return res.status(404).json({ error: 'no Eliminado',eliminado:false});
+        } 
+        // Uso 
+        const index = req.session.usuario.musics.findIndex(item => item.id === parseInt(id)); 
+        if (index !== -1) {
+            req.session.usuario.musics.splice(index, 1);
+        }
+        //console.log(id, req.session.usuario.musics)
+        res.json({ message: 'Musica eliminada...', musics: req.session.usuario.musics, eliminado: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+///Imagenes
+exports.addImg = async (req, res) => {
     try {
         const { nombre, url } = req.body;
 
@@ -155,10 +195,31 @@ exports.addImg = async (req, res) => {
             INSERT INTO imagenes (nombre, url, email_user)
             VALUES (?, ?, ?)
         `;
-        await db.run(sql, [nombre, url, req.session.usuario.email]); 
-        res.json({ nombre: nombre, url: url, email_user: req.session.usuario.email});
-        req.session.usuario.imagenes.push({nombre: nombre, url: url,email_user: req.session.usuario.email });
+        await db.run(sql, [nombre, url, req.session.usuario.email]);
+        res.json({ nombre: nombre, url: url, email_user: req.session.usuario.email });
+        req.session.usuario.imagenes.push({ nombre: nombre, url: url, email_user: req.session.usuario.email });
         //res.json({ message: 'Usuario creado', id: result.id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+exports.removeImg = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const sql = `DELETE FROM imagenes WHERE id = ?`;
+        const result = await db.run(sql, [id]);
+
+        if (result.changes === 0) {
+            return res.status(404).json({ error: 'no Eliminado',eliminado:false});
+        } 
+        
+        // Uso 
+        const index = req.session.usuario.imagenes.findIndex(item => item.id === parseInt(id)); 
+        if (index !== -1) {
+            req.session.usuario.imagenes.splice(index, 1);
+        }
+        //console.log(id, req.session.usuario.imagenes)
+        res.json({ message: 'Img eliminada...', imagenes: req.session.usuario.imagenes, eliminado: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Musicas</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/w_config.css">
+    <style>
+        button {
+            background: none;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/nav'); %>
+        <div id="listMusic" style="height: inherit; display: block; margin: 20px; overflow-y: scroll;" class="">
+            <h3 style="text-align: center;">Elimina y Edita tu Musica</h3>
+            <% musics.forEach(function(item) { %>
+                <div class="track-list" id="<%= item.id %>" style="display: flex; align-items: center;margin: 10px;">
+                    <img src="/images/icon-music.png" height="30" width="30">
+                    <div class="track" data-src="<%= item.url %>">
+                        <marquee>
+                            <%= item.nombre %>
+                        </marquee>
+                    </div>
+                    <button onclick="eliminarMusica('<%= item.id %>')"><img src="/images/borrar.png" height="30"
+                            width="30"></button>
+                    <img src="/images/lapiz.png" height="30" width="30">
+                </div>
+                <% }); %>
+        </div>
+
+        <%- include('partials/config.ejs'); -%>
+            <script>
+                function fetchPost(url, dataJson, callback) {
+                    fetch(url, {
+                        method: 'post',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(dataJson),
+                    }).then(respuesta => respuesta.json())
+                        .then(datos => { 
+                            callback(datos);
+                        });
+                }
+                function msgResp(res) {
+
+                    console.log("RES::", res);
+                }
+                function eliminarMusica(id) {
+                    document.getElementById(id).remove();
+                    const data = {
+                        id: id
+                    }
+                    fetchPost("/usuarios/removeMusic", data, msgResp);
+                }
+            </script>
+            <script src="/javascripts/js_windows_float.js"></script>
+</body>
+
+</html>
