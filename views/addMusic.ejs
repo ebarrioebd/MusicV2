@@ -10,8 +10,8 @@
 
 </head>
 
-<body> 
-    <%- include('partials/nav'); %> 
+<body>
+    <%- include('partials/nav'); %>
         <div class="content">
             <main class="wrap">
                 <section class="card" aria-labelledby="titulo">
@@ -46,7 +46,7 @@
                         </div>
                     </div>
                 </section>
-            </main> 
+            </main>
             <main class="wrap">
                 <section class="card" aria-labelledby="titulo">
                     <header>
@@ -78,76 +78,78 @@
             </main>
         </div>
         <%- include('partials/config.ejs'); -%>
-        <script>
-            function listoMusic(datos) {
-                document.getElementById("nombre").value = "";
-                document.getElementById("url").value = "";
-            }
-            function listoImg(datos) {
-                document.getElementById("nombreImg").value = "";
-                document.getElementById("urlImg").value = "";
-            }
-            function fetchPost(url, dataJson, callback) {
-                fetch(url, {
-                    method: 'post',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(dataJson),
-                }).then(respuesta => respuesta.json())
-                    .then(datos => {
-                        callback(datos);
-                    });
-            }
-            function addMusic() {
-                const nombre = document.getElementById("nombre").value;
-                const urlDrodpox = document.getElementById("url").value;
-                console.log(nombre, urlDrodpox)
-                if (urlDrodpox.slice(0, 24) == "https://www.dropbox.com/" && nombre.length > 5) {
-                    let url_direct = "https://dl.dropboxusercontent.com" + urlDrodpox.slice(23, urlDrodpox.length - 5);
-                    const dataJson = {
-                        nombre: nombre,
-                        url: url_direct
-                    };
-                    fetchPost("/usuarios/addMusic", dataJson, listoMusic);
-                    /*fetch('/usuarios/addMusic', {
+            <script>
+                function listoMusic(datos) {  
+                    //limpiamos 
+                    document.getElementById("nombre").value = "";
+                    document.getElementById("url").value = "";
+                }
+                function listoImg(datos) {
+                    console.log("Datos desde AddImg:",datos)
+                    console.log("Agregano datos al select...")
+                    // 1. Obtener el elemento select
+                    const selectElement = document.getElementById('selectImg');
+
+                    // 2. Crear un nuevo elemento option
+                    const newOption = document.createElement('option');
+
+                    // 3. Establecer el texto y el valor de la nueva opción
+                    newOption.text = document.getElementById("nombreImg").value;
+                    newOption.value = document.getElementById("urlImg").value;
+
+                    // 4. Agregar la nueva opción al select
+                    selectElement.add(newOption);
+                    console.log("Datos agregados........")
+                    document.getElementById("nombreImg").value = "";
+                    document.getElementById("urlImg").value = "";
+                }
+                function fetchPost(url, dataJson, callback) {
+                    fetch(url, {
                         method: 'post',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({
-                            nombre: nombre,
-                            url: url_direct
-                        }),
+                        body: JSON.stringify(dataJson),
                     }).then(respuesta => respuesta.json())
                         .then(datos => {
-                            document.getElementById("nombre").value="";
-                            document.getElementById("url").value ="";
-                            listo(datos)
-                        })*/
+                            callback(datos);
+                        });
                 }
-                else {
-                    alert("No ur DrobPox");
+                function addMusic() {
+                    const nombre = document.getElementById("nombre").value;
+                    const urlDrodpox = document.getElementById("url").value;
+                    console.log(nombre, urlDrodpox)
+                    if (urlDrodpox.slice(0, 24) == "https://www.dropbox.com/" && nombre.length > 5) {
+                        let url_direct = "https://dl.dropboxusercontent.com" + urlDrodpox.slice(23, urlDrodpox.length - 5);
+                        const dataJson = {
+                            nombre: nombre,
+                            url: url_direct
+                        };
+                        fetchPost("/usuarios/addMusic", dataJson, listoMusic);
+
+                    }
+                    else {
+                        alert("No ur DrobPox");
+                    }
                 }
-            }
-            function addImg() {
-                const nombre = document.getElementById("nombreImg").value;
-                const urlDrodpox = document.getElementById("urlImg").value;
-                console.log(nombre, urlDrodpox)
-                if (urlDrodpox.slice(0, 24) == "https://www.dropbox.com/" && nombre.length > 5) {
-                    let url_direct = "https://dl.dropboxusercontent.com" + urlDrodpox.slice(23, urlDrodpox.length - 5);
-                    const dataJson = {
-                        nombre: nombre,
-                        url: url_direct
-                    };
-                    fetchPost("/usuarios/addImg", dataJson, listoImg);
+                function addImg() {
+                    const nombre = document.getElementById("nombreImg").value;
+                    const urlDrodpox = document.getElementById("urlImg").value;
+                    console.log(nombre, urlDrodpox)
+                    if (urlDrodpox.slice(0, 24) == "https://www.dropbox.com/" && nombre.length > 1) {
+                        let url_direct = "https://dl.dropboxusercontent.com" + urlDrodpox.slice(23, urlDrodpox.length - 5);
+                        const dataJson = {
+                            nombre: nombre,
+                            url: url_direct
+                        };
+                        fetchPost("/usuarios/addImg", dataJson, listoImg);
+                    }
+                    else {
+                        alert("Nombre corto, o url incorrecta");
+                    }
                 }
-                else {
-                    alert("No ur DrobPox");
-                }
-            }
-        </script>
-        <script src="/javascripts/js_windows_float.js"></script>
+            </script>
+            <script src="/javascripts/js_windows_float.js"></script>
 </body>
 
 </html>

@@ -71,7 +71,8 @@ router.get("/ver_imagenes",isAutenticate,(req,res)=>{
     imagen_fondo: req.session.usuario.imagen_fondo,
     musics: req.session.usuario.musics,
     imagenes: req.session.usuario.imagenes
-  };  
+  }; 
+  console.log(datosAenviar.imagenes)
   res.render('ver_imagenes', datosAenviar);
 });
 

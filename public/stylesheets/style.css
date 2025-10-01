@@ -135,7 +135,7 @@ audio {
   }
 
   .player {
-    margin: 30px;
+    margin: 30px 60px;
     padding: 16px;
   }
 }

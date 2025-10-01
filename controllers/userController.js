@@ -189,17 +189,21 @@ exports.removeMusic = async (req, res) => {
 ///Imagenes
 exports.addImg = async (req, res) => {
     try {
+        console.log("Agregando imagen .................")
         const { nombre, url } = req.body;
 
         const sql = `
             INSERT INTO imagenes (nombre, url, email_user)
             VALUES (?, ?, ?)
         `;
-        await db.run(sql, [nombre, url, req.session.usuario.email]);
-        res.json({ nombre: nombre, url: url, email_user: req.session.usuario.email });
-        req.session.usuario.imagenes.push({ nombre: nombre, url: url, email_user: req.session.usuario.email });
-        //res.json({ message: 'Usuario creado', id: result.id });
+        const imgAdd= await db.run(sql, [nombre, url, req.session.usuario.email]);
+        console.log("img DataAdd:",imgAdd)
+        req.session.usuario.imagenes.push({ nombre: nombre, url: url, id: imgAdd.id });
+ 
+        console.log("Imagen agregada .................")
+        res.json({ nombre: nombre, url: url, id: imgAdd.id  });
     } catch (err) {
+        console.log("Imagen NONONONO agregada .................:",err)
         res.status(500).json({ error: err.message });
     }
 };

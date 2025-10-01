@@ -172,7 +172,7 @@ class AudioPlayer {
     // Events from <audio>
     _onPlay() {
         this.isPlaying = true;
-        this.playBtn.textContent = '||';
+        this.playBtn.textContent = '| |';
         // init audio context if not yet (user gesture)
         if (!this.audioContext) this.initAudioContextOnce();
         if (this.audioContext && this.audioContext.state === 'suspended') this.audioContext.resume();
@@ -268,7 +268,7 @@ class AudioPlayer {
 
         for (let i = 0; i < halfBars; i++) {
             const v = this.dataArray[i] / 255;
-            const barH = v * usableH * 0.70;
+            const barH = v * usableH * 0.50;
             const alpha = 0.15 + v * 0.85;
             // 🎨 Color dinámico basado en intensidad
             const r = Math.floor(255 * v);           // Rojo más alto con volumen
